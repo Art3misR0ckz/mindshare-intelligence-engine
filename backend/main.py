@@ -3,6 +3,7 @@ from backend.services.scoring_service import calculate_trend_score
 from fastapi import FastAPI
 from backend.services.google_trends import get_trends
 from backend.services.youtube_service import search_youtube
+from backend.services.db_service import analysis_collection
 
 app = FastAPI()
 
@@ -25,6 +26,16 @@ def analyze(keyword: str):
 
     scores=calculate_trend_score(trends, youtube_results)
 
+    analysis_document = {
+        "keyword": keyword,
+        "google_trends": trends,
+        "youtube_results": youtube_results,
+        "scores": scores,
+        "ai_insights": insights
+    }
+
+    analysis_collection.insert_one(analysis_document)
+
     return {
         "keyword": keyword,
         "google_trends": trends,
@@ -33,5 +44,12 @@ def analyze(keyword: str):
         "ai_insights": insights
     }
 
+@app.get("/history")
+def get_history():
 
+    history = list(
+        analysis_collection.find({}, {"_id": 0})
+    )
+
+    return history
 
