@@ -136,6 +136,72 @@ if st.button("Analyze"):
                 st.divider()
 
             # ---------------------------------------------------
+            # SENTIMENT ANALYSIS
+            # ---------------------------------------------------
+
+            st.subheader("Audience Sentiment Analysis")
+
+            sentiment = data["sentiment"]
+
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                st.metric(
+                    "Positive %",
+                    sentiment["positive"]
+                )
+
+            with col2:
+                st.metric(
+                    "Negative %",
+                    sentiment["negative"]
+                )
+
+            with col3:
+                st.metric(
+                    "Neutral %",
+                    sentiment["neutral"]
+                )
+
+            # -----------------------------------------
+            # SENTIMENT CHART
+            # -----------------------------------------
+
+            sentiment_df = pd.DataFrame({
+                "Sentiment": [
+                    "Positive",
+                    "Negative",
+                    "Neutral"
+                ],
+                "Percentage": [
+                    sentiment["positive"],
+                    sentiment["negative"],
+                    sentiment["neutral"]
+                ]
+            })
+
+            st.bar_chart(
+                sentiment_df.set_index("Sentiment")
+            )
+
+            st.divider()
+
+            # ---------------------------------------------------
+            # COMMENT INSIGHTS
+            # ---------------------------------------------------
+
+            st.subheader("Audience Comment Insights")
+
+            st.info(
+                data["comment_insights"]
+            )
+
+            st.divider()
+
+
+
+
+            # ---------------------------------------------------
             # AI INSIGHTS
             # ---------------------------------------------------
 
