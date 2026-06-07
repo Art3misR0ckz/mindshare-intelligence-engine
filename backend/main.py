@@ -62,3 +62,11 @@ def get_history():
 
     return history
 
+@app.delete("/delete-history")
+def delete_history():
+
+    analysis_collection.delete_many({})
+
+    return {
+        "message": "History deleted successfully"
+    }
