@@ -4,17 +4,23 @@ analyzer = SentimentIntensityAnalyzer()
 
 def analyze_sentiment(youtube_results):
 
-    sentiments = []
+    all_comments = []
+
+    # -----------------------------------------
+    # EXTRACT COMMENTS
+    # -----------------------------------------
 
     for video in youtube_results:
 
-        text = video["title"]
+        comments = video.get("comments", [])
 
-        score = analyzer.polarity_scores(text)
+        all_comments.extend(comments)
 
-        sentiments.append(score)
+    # -----------------------------------------
+    # HANDLE EMPTY COMMENTS
+    # -----------------------------------------
 
-    if not sentiments:
+    if not all_comments:
 
         return {
             "positive": 0,
@@ -22,20 +28,43 @@ def analyze_sentiment(youtube_results):
             "neutral": 0
         }
 
-    positive = sum(
-        s["pos"] for s in sentiments
-    ) / len(sentiments)
+    # -----------------------------------------
+    # ANALYZE SENTIMENT
+    # -----------------------------------------
 
-    negative = sum(
-        s["neg"] for s in sentiments
-    ) / len(sentiments)
+    positive_scores = []
+    negative_scores = []
+    neutral_scores = []
 
-    neutral = sum(
-        s["neu"] for s in sentiments
-    ) / len(sentiments)
+    for comment in all_comments:
+
+        scores = analyzer.polarity_scores(comment)
+
+        positive_scores.append(scores["pos"])
+        negative_scores.append(scores["neg"])
+        neutral_scores.append(scores["neu"])
+
+    # -----------------------------------------
+    # AVERAGE SCORES
+    # -----------------------------------------
+
+    positive = (
+        sum(positive_scores)
+        / len(positive_scores)
+    ) * 100
+
+    negative = (
+        sum(negative_scores)
+        / len(negative_scores)
+    ) * 100
+
+    neutral = (
+        sum(neutral_scores)
+        / len(neutral_scores)
+    ) * 100
 
     return {
-        "positive": round(positive * 100, 2),
-        "negative": round(negative * 100, 2),
-        "neutral": round(neutral * 100, 2)
+        "positive": round(positive, 2),
+        "negative": round(negative, 2),
+        "neutral": round(neutral, 2)
     }

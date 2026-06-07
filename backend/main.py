@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from backend.services.google_trends import get_trends
 from backend.services.youtube_service import search_youtube
 from backend.services.db_service import analysis_collection
+from backend.services.sentiment_service import analyze_sentiment
 
 app = FastAPI()
 
@@ -17,6 +18,8 @@ def analyze(keyword: str):
     trends = get_trends(keyword)
 
     youtube_results = search_youtube(keyword)
+    sentiment=analyze_sentiment(youtube_results)
+    scores=calculate_trend_score(trends, youtube_results)
 
     insights = generate_insights(
         keyword,
@@ -24,7 +27,7 @@ def analyze(keyword: str):
         youtube_results
     )
 
-    scores=calculate_trend_score(trends, youtube_results)
+    
 
     analysis_document = {
         "keyword": keyword,
@@ -40,8 +43,10 @@ def analyze(keyword: str):
         "keyword": keyword,
         "google_trends": trends,
         "youtube_results": youtube_results,
+        "sentiment": sentiment,
         "scores": scores,
         "ai_insights": insights
+        
     }
 
 @app.get("/history")
