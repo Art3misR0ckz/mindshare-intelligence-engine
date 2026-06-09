@@ -34,9 +34,38 @@ if page == "Analyze":
         "AI-powered audience attention and campaign intelligence system"
     )
 
+    # ---------------------------------------------------
+    # INPUTS
+    # ---------------------------------------------------
+
     keyword = st.text_input(
         "Enter a category or trend"
     )
+
+    location = st.selectbox(
+        "Select Market Location",
+        [
+            "",
+            "IN",
+            "US",
+            "GB",
+            "CA",
+            "AU"
+        ]
+    )
+
+    timeframe = st.selectbox(
+        "Select Trend Timeline",
+        [
+            "today 3-m",
+            "today 12-m",
+            "today 5-y"
+        ]
+    )
+
+    # ---------------------------------------------------
+    # ANALYZE BUTTON
+    # ---------------------------------------------------
 
     if st.button("Analyze"):
 
@@ -46,13 +75,21 @@ if page == "Analyze":
 
             try:
 
+                # -----------------------------------------
+                # API CALL
+                # -----------------------------------------
+
                 url = (
-                    f"http://127.0.0.1:8000/analyze?keyword={keyword}"
+                    "http://127.0.0.1:8000/analyze"
+                    f"?keyword={keyword}"
+                    f"&location={location}"
+                    f"&timeframe={timeframe}"
                 )
 
                 response = requests.get(url)
 
                 data = response.json()
+                #st.write(data["google_trends"][:5])
 
                 st.divider()
 
@@ -92,33 +129,45 @@ if page == "Analyze":
                     "Google Trends Analytics"
                 )
 
-                trends_df = pd.DataFrame(
-                    data["google_trends"]
-                )
+                trends_data = data["google_trends"]
 
-                trends_df = trends_df.set_index(
-                    "date"
-                )
+                if not trends_data:
 
-                st.line_chart(trends_df)
+                    st.warning(
+                        "No Google Trends data found."
+                    )
 
-                latest_score = (
-                    trends_df["score"].iloc[-1]
-                )
+                else:
 
-                previous_score = (
-                    trends_df["score"].iloc[-2]
-                )
+                    trends_df = pd.DataFrame(
+                        trends_data
+                    )
 
-                delta = (
-                    latest_score - previous_score
-                )
+                    trends_df = trends_df.set_index(
+                        "date"
+                    )
 
-                st.metric(
-                    "Trend Momentum",
-                    latest_score,
-                    delta
-                )
+                    st.line_chart(
+                        trends_df
+                    )
+
+                    latest_score = (
+                        trends_df["score"].iloc[-1]
+                    )
+
+                    previous_score = (
+                        trends_df["score"].iloc[-2]
+                    )
+
+                    delta = (
+                        latest_score - previous_score
+                    )
+
+                    st.metric(
+                        "Trend Momentum",
+                        latest_score,
+                        delta
+                    )
 
                 st.divider()
 
@@ -271,6 +320,14 @@ elif page == "History":
 
             st.markdown(
                 f"## {item['keyword']}"
+            )
+
+            st.write(
+                f"Location: {item.get('location', '')}"
+            )
+
+            st.write(
+                f"Timeframe: {item.get('timeframe', '')}"
             )
 
             st.write(
