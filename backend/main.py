@@ -5,12 +5,15 @@ from backend.services.youtube_service import search_youtube
 from backend.services.sentiment_service import analyze_sentiment
 from backend.services.comment_insight_service import generate_comment_insights
 from backend.services.scoring_service import calculate_trend_score
-from backend.services.ai_service import generate_insights
+from backend.services.ai_service import (
+    generate_insights,
+    generate_brand_audit_insights
+)
 from backend.services.db_service import analysis_collection
 from backend.services.brand_audit_service import audit_brand_website
-
-from backend.services.ai_service import generate_brand_audit_insights
-from backend.services.persona_service import (generate_customer_persona)
+from backend.services.persona_service import (
+    generate_customer_persona
+)
 
 # ---------------------------------------------------
 # FASTAPI INITIALIZATION
@@ -96,6 +99,9 @@ def analyze(
         youtube_results
     )
 
+    # -----------------------------------------
+    # CUSTOMER PERSONA
+    # -----------------------------------------
 
     persona = generate_customer_persona(
         keyword,
@@ -182,7 +188,7 @@ def brand_audit(url: str):
     )
 
     # -----------------------------------------
-    # AI ANALYSIS
+    # AI BRAND INSIGHTS
     # -----------------------------------------
 
     insights = (
@@ -191,14 +197,31 @@ def brand_audit(url: str):
         )
     )
 
+    # -----------------------------------------
+    # CUSTOMER PERSONA
+    # -----------------------------------------
+
+    customer_persona = (
+        generate_customer_persona(
+            keyword=brand_data["title"],
+            sentiment={},
+            comment_insights="",
+            brand_insights=insights
+        )
+    )
+
+    # -----------------------------------------
+    # API RESPONSE
+    # -----------------------------------------
+
     return {
 
         "website_data": brand_data,
 
-        "brand_insights": insights
+        "brand_insights": insights,
+
+        "customer_persona": customer_persona
     }
-
-
 
 # ---------------------------------------------------
 # HISTORY ROUTE
