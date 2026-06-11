@@ -7,6 +7,10 @@ from backend.services.comment_insight_service import generate_comment_insights
 from backend.services.scoring_service import calculate_trend_score
 from backend.services.ai_service import generate_insights
 from backend.services.db_service import analysis_collection
+from backend.services.brand_audit_service import audit_brand_website
+
+from backend.services.ai_service import generate_brand_audit_insights
+from backend.services.persona_service import (generate_customer_persona)
 
 # ---------------------------------------------------
 # FASTAPI INITIALIZATION
@@ -92,6 +96,14 @@ def analyze(
         youtube_results
     )
 
+
+    persona = generate_customer_persona(
+        keyword,
+        sentiment,
+        comment_insights,
+        insights
+    )
+
     # -----------------------------------------
     # MONGODB DOCUMENT
     # -----------------------------------------
@@ -109,6 +121,8 @@ def analyze(
         "youtube_results": youtube_results,
 
         "sentiment": sentiment,
+
+        "customer_persona": persona,
 
         "comment_insights": comment_insights,
 
@@ -143,12 +157,48 @@ def analyze(
 
         "sentiment": sentiment,
 
+        "customer_persona": persona,
+
         "comment_insights": comment_insights,
 
         "scores": scores,
 
         "ai_insights": insights
     }
+
+# ---------------------------------------------------
+# BRAND AUDIT ENDPOINT
+# ---------------------------------------------------
+
+@app.get("/brand-audit")
+def brand_audit(url: str):
+
+    # -----------------------------------------
+    # SCRAPE WEBSITE
+    # -----------------------------------------
+
+    brand_data = audit_brand_website(
+        url
+    )
+
+    # -----------------------------------------
+    # AI ANALYSIS
+    # -----------------------------------------
+
+    insights = (
+        generate_brand_audit_insights(
+            brand_data
+        )
+    )
+
+    return {
+
+        "website_data": brand_data,
+
+        "brand_insights": insights
+    }
+
+
 
 # ---------------------------------------------------
 # HISTORY ROUTE

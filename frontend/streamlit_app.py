@@ -19,7 +19,11 @@ st.sidebar.title("Navigation")
 
 page = st.sidebar.radio(
     "Go To",
-    ["Analyze", "History"]
+    [
+        "Analyze",
+        "Brand Audit",
+        "History"
+    ]
 )
 
 # ---------------------------------------------------
@@ -79,17 +83,18 @@ if page == "Analyze":
                 # API CALL
                 # -----------------------------------------
 
-                url = (
-                    "http://127.0.0.1:8000/analyze"
-                    f"?keyword={keyword}"
-                    f"&location={location}"
-                    f"&timeframe={timeframe}"
+                response = requests.get(
+
+                    "http://127.0.0.1:8000/analyze",
+
+                    params={
+                        "keyword": keyword,
+                        "location": location,
+                        "timeframe": timeframe
+                    }
                 )
 
-                response = requests.get(url)
-
                 data = response.json()
-                #st.write(data["google_trends"][:5])
 
                 st.divider()
 
@@ -97,23 +102,28 @@ if page == "Analyze":
                 # SCORE CARDS
                 # -----------------------------------------
 
-                st.subheader("Opportunity Scores")
+                st.subheader(
+                    "Opportunity Scores"
+                )
 
                 col1, col2, col3 = st.columns(3)
 
                 with col1:
+
                     st.metric(
                         "Trend Score",
                         data["scores"]["trend_score"]
                     )
 
                 with col2:
+
                     st.metric(
                         "Saturation Level",
                         data["scores"]["saturation_level"]
                     )
 
                 with col3:
+
                     st.metric(
                         "Campaign Opportunity",
                         data["scores"]["campaign_opportunity"]
@@ -129,7 +139,9 @@ if page == "Analyze":
                     "Google Trends Analytics"
                 )
 
-                trends_data = data["google_trends"]
+                trends_data = data[
+                    "google_trends"
+                ]
 
                 if not trends_data:
 
@@ -179,34 +191,41 @@ if page == "Analyze":
                     "Audience Sentiment Analysis"
                 )
 
-                sentiment = data["sentiment"]
+                sentiment = data[
+                    "sentiment"
+                ]
 
                 col1, col2, col3 = st.columns(3)
 
                 with col1:
+
                     st.metric(
                         "Positive %",
                         sentiment["positive"]
                     )
 
                 with col2:
+
                     st.metric(
                         "Negative %",
                         sentiment["negative"]
                     )
 
                 with col3:
+
                     st.metric(
                         "Neutral %",
                         sentiment["neutral"]
                     )
 
                 sentiment_df = pd.DataFrame({
+
                     "Sentiment": [
                         "Positive",
                         "Negative",
                         "Neutral"
                     ],
+
                     "Percentage": [
                         sentiment["positive"],
                         sentiment["negative"],
@@ -263,6 +282,111 @@ if page == "Analyze":
                 st.divider()
 
                 # -----------------------------------------
+                # CUSTOMER PERSONA
+                # -----------------------------------------
+
+                st.subheader(
+                    "Customer Persona Intelligence"
+                )
+
+                persona = data[
+                    "customer_persona"
+                ]
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+
+                    st.metric(
+                        "Primary Age Group",
+                        persona["age_group"]
+                    )
+
+                    st.write(
+                        "### Lifestyle"
+                    )
+
+                    st.write(
+                        persona["lifestyle"]
+                    )
+
+                    st.write(
+                        "### Interests"
+                    )
+
+                    st.write(
+                        persona["interests"]
+                    )
+
+                    st.write(
+                        "### Buying Behavior"
+                    )
+
+                    st.write(
+                        persona["buying_behavior"]
+                    )
+
+                with col2:
+
+                    st.write(
+                        "### Emotional Triggers"
+                    )
+
+                    st.write(
+                        persona["emotional_triggers"]
+                    )
+
+                    st.write(
+                        "### Platform Preferences"
+                    )
+
+                    st.write(
+                        persona["platform_preferences"]
+                    )
+
+                    st.write(
+                        "### Consumer Motivations"
+                    )
+
+                    st.write(
+                        persona["consumer_motivations"]
+                    )
+
+                    st.write(
+                        "### Pain Points"
+                    )
+
+                    st.write(
+                        persona["pain_points"]
+                    )
+
+                st.divider()
+
+                st.subheader(
+                    "Customer Archetype"
+                )
+
+                st.success(
+                    persona[
+                        "customer_archetype"
+                    ]
+                )
+
+                st.divider()
+
+                st.subheader(
+                    "Marketing Recommendations"
+                )
+
+                st.info(
+                    persona[
+                        "marketing_recommendations"
+                    ]
+                )
+
+                st.divider()
+
+                # -----------------------------------------
                 # AI INSIGHTS
                 # -----------------------------------------
 
@@ -276,7 +400,216 @@ if page == "Analyze":
 
             except Exception as e:
 
-                st.error(f"Error: {e}")
+                st.error(
+                    f"Error: {e}"
+                )
+
+# ---------------------------------------------------
+# BRAND AUDIT PAGE
+# ---------------------------------------------------
+
+elif page == "Brand Audit":
+
+    st.title("AI Brand Audit")
+
+    st.markdown(
+        """
+Analyze a brand website using AI-powered
+market positioning intelligence.
+"""
+    )
+
+    website_url = st.text_input(
+        "Enter Brand Website URL"
+    )
+
+    if st.button("Run Brand Audit"):
+
+        with st.spinner(
+            "Analyzing brand positioning..."
+        ):
+
+            try:
+
+                response = requests.get(
+
+                    "http://127.0.0.1:8000/brand-audit",
+
+                    params={
+                        "url": website_url
+                    }
+                )
+
+                data = response.json()
+
+                st.divider()
+
+                # ---------------------------------
+                # WEBSITE DATA
+                # ---------------------------------
+
+                st.subheader(
+                    "Website Intelligence"
+                )
+
+                website_data = data[
+                    "website_data"
+                ]
+
+                st.write(
+                    f"### {website_data['title']}"
+                )
+
+                st.info(
+                    website_data[
+                        "meta_description"
+                    ]
+                )
+
+                st.divider()
+
+                # ---------------------------------
+                # HEADINGS
+                # ---------------------------------
+
+                st.subheader(
+                    "Brand Messaging"
+                )
+
+                for heading in website_data[
+                    "headings"
+                ][:10]:
+
+                    st.write(
+                        f"• {heading}"
+                    )
+
+                st.divider()
+
+                # ---------------------------------
+                # CUSTOMER PERSONA
+                # ---------------------------------
+
+                st.subheader(
+                    "Customer Persona Intelligence"
+                )
+
+                persona = data[
+                    "customer_persona"
+                ]
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+
+                    st.metric(
+                        "Primary Age Group",
+                        persona["age_group"]
+                    )
+
+                    st.write(
+                        "### Lifestyle"
+                    )
+
+                    st.write(
+                        persona["lifestyle"]
+                    )
+
+                    st.write(
+                        "### Interests"
+                    )
+
+                    st.write(
+                        persona["interests"]
+                    )
+
+                    st.write(
+                        "### Buying Behavior"
+                    )
+
+                    st.write(
+                        persona["buying_behavior"]
+                    )
+
+                with col2:
+
+                    st.write(
+                        "### Emotional Triggers"
+                    )
+
+                    st.write(
+                        persona["emotional_triggers"]
+                    )
+
+                    st.write(
+                        "### Platform Preferences"
+                    )
+
+                    st.write(
+                        persona["platform_preferences"]
+                    )
+
+                    st.write(
+                        "### Consumer Motivations"
+                    )
+
+                    st.write(
+                        persona["consumer_motivations"]
+                    )
+
+                    st.write(
+                        "### Pain Points"
+                    )
+
+                    st.write(
+                        persona["pain_points"]
+                    )
+
+                st.divider()
+
+                st.subheader(
+                    "Customer Archetype"
+                )
+
+                st.success(
+                    persona[
+                        "customer_archetype"
+                    ]
+                )
+
+                st.divider()
+
+                st.subheader(
+                    "Marketing Recommendations"
+                )
+
+                st.info(
+                    persona[
+                        "marketing_recommendations"
+                    ]
+                )
+
+                st.divider()
+
+                # ---------------------------------
+                # AI INSIGHTS
+                # ---------------------------------
+
+                st.subheader(
+                    "AI Brand Intelligence"
+                )
+
+                st.success(
+                    data[
+                        "brand_insights"
+                    ]
+                )
+
+            except Exception as e:
+
+                st.error(
+                    f"Brand Audit Error: {e}"
+                )
 
 # ---------------------------------------------------
 # HISTORY PAGE
@@ -284,13 +617,13 @@ if page == "Analyze":
 
 elif page == "History":
 
-    st.title("Analysis History")
+    st.title(
+        "Analysis History"
+    )
 
-    # -----------------------------------------
-    # DELETE BUTTON
-    # -----------------------------------------
-
-    if st.button("Delete All History"):
+    if st.button(
+        "Delete All History"
+    ):
 
         delete_response = requests.delete(
             "http://127.0.0.1:8000/delete-history"
@@ -346,4 +679,6 @@ elif page == "History":
 
     except Exception as e:
 
-        st.error(f"History Error: {e}")
+        st.error(
+            f"History Error: {e}"
+        )

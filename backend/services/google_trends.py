@@ -1,3 +1,6 @@
+import time
+import random
+
 from pytrends.request import TrendReq
 
 # ---------------------------------------------------
@@ -52,6 +55,13 @@ def get_trends(
             )
 
         else:
+            
+            # Random delay to avoid rate limits
+            time.sleep(
+                random.uniform(2, 5)
+            )
+
+
 
             pytrends.build_payload(
                 [keyword],
