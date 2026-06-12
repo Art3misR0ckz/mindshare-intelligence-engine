@@ -1,18 +1,48 @@
 from fastapi import FastAPI
 
-from backend.services.google_trends import get_trends
-from backend.services.youtube_service import search_youtube
-from backend.services.sentiment_service import analyze_sentiment
-from backend.services.comment_insight_service import generate_comment_insights
-from backend.services.scoring_service import calculate_trend_score
+from backend.services.google_trends import (
+    get_trends
+)
+
+from backend.services.youtube_service import (
+    search_youtube
+)
+
+from backend.services.sentiment_service import (
+    analyze_sentiment
+)
+
+from backend.services.comment_insight_service import (
+    generate_comment_insights
+)
+
+from backend.services.scoring_service import (
+    calculate_trend_score
+)
+
 from backend.services.ai_service import (
     generate_insights,
     generate_brand_audit_insights
 )
-from backend.services.db_service import analysis_collection
-from backend.services.brand_audit_service import audit_brand_website
+
+from backend.services.db_service import (
+    analysis_collection
+)
+
+from backend.services.brand_audit_service import (
+    audit_brand_website
+)
+
 from backend.services.persona_service import (
     generate_customer_persona
+)
+
+from backend.services.news_service import (
+    get_market_news
+)
+
+from backend.services.search_service import (
+    get_search_intelligence
 )
 
 # ---------------------------------------------------
@@ -29,6 +59,7 @@ app = FastAPI()
 def home():
 
     return {
+
         "message":
         "Mindshare Intelligence Engine Running"
     }
@@ -59,6 +90,22 @@ def analyze(
     # -----------------------------------------
 
     youtube_results = search_youtube(
+        keyword
+    )
+
+    # -----------------------------------------
+    # GOOGLE SEARCH INTELLIGENCE
+    # -----------------------------------------
+
+    search_results = get_search_intelligence(
+        keyword
+    )
+
+    # -----------------------------------------
+    # MARKET NEWS
+    # -----------------------------------------
+
+    market_news = get_market_news(
         keyword
     )
 
@@ -94,9 +141,16 @@ def analyze(
     # -----------------------------------------
 
     insights = generate_insights(
+
         keyword,
+
         trends,
-        youtube_results
+
+        youtube_results,
+
+        market_news,
+
+        search_results
     )
 
     # -----------------------------------------
@@ -104,9 +158,13 @@ def analyze(
     # -----------------------------------------
 
     persona = generate_customer_persona(
+
         keyword,
+
         sentiment,
+
         comment_insights,
+
         insights
     )
 
@@ -125,6 +183,10 @@ def analyze(
         "google_trends": trends,
 
         "youtube_results": youtube_results,
+
+        "search_results": search_results,
+
+        "market_news": market_news,
 
         "sentiment": sentiment,
 
@@ -160,6 +222,10 @@ def analyze(
         "google_trends": trends,
 
         "youtube_results": youtube_results,
+
+        "search_results": search_results,
+
+        "market_news": market_news,
 
         "sentiment": sentiment,
 
@@ -203,9 +269,13 @@ def brand_audit(url: str):
 
     customer_persona = (
         generate_customer_persona(
+
             keyword=brand_data["title"],
+
             sentiment={},
+
             comment_insights="",
+
             brand_insights=insights
         )
     )
@@ -231,6 +301,7 @@ def brand_audit(url: str):
 def get_history():
 
     history = list(
+
         analysis_collection.find(
             {},
             {"_id": 0}
@@ -249,6 +320,7 @@ def delete_history():
     analysis_collection.delete_many({})
 
     return {
+
         "message":
         "History deleted successfully"
     }

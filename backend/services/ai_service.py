@@ -1,6 +1,7 @@
 from openai import OpenAI
 import requests
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,56 +12,127 @@ load_dotenv()
 
 client = OpenAI(
 
-    api_key=os.getenv("OPENROUTER_API_KEY"),
+    api_key=os.getenv(
+        "OPENROUTER_API_KEY"
+    ),
 
-    base_url="https://openrouter.ai/api/v1"
+    base_url=
+    "https://openrouter.ai/api/v1"
 )
 
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENROUTER_API_KEY = os.getenv(
+    "OPENROUTER_API_KEY"
+)
 
-def generate_insights(keyword, trends, youtube_results):
+# ---------------------------------------------------
+# GENERATE MARKET INSIGHTS
+# ---------------------------------------------------
+
+def generate_insights(
+
+    keyword,
+
+    trends,
+
+    youtube_results,
+
+    market_news,
+
+    search_results
+):
 
     prompt = f"""
-    You are a marketing intelligence AI.
 
-    Analyze the following audience attention signals.
+You are an advanced AI marketing intelligence strategist.
 
-    Keyword:
-    {keyword}
+Analyze the following market attention signals.
 
-    Google Trends Data:
-    {trends}
+# KEYWORD
+{keyword}
 
-    YouTube Results:
-    {youtube_results}
+# GOOGLE TRENDS DATA
+{trends}
 
-    Give:
-    1. Main audience interest
-    2. Emerging narrative
-    3. Suggested campaign angle
-    4. Whether this looks early-stage or saturated
-    """
+# YOUTUBE AUDIENCE SIGNALS
+{youtube_results}
 
-    response = requests.post(
-        "https://openrouter.ai/api/v1/chat/completions",
-        headers={
-            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-            "Content-Type": "application/json"
-        },
-        json={
-            "model": "deepseek/deepseek-chat",
-            "messages": [
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
-        }
-    )
+# MARKET NEWS
+{market_news}
 
-    result = response.json()
+# GOOGLE SEARCH INTELLIGENCE
+{search_results}
 
-    return result["choices"][0]["message"]["content"]
+Generate a highly strategic marketing intelligence report.
+
+Include:
+
+1. Main audience interest
+2. Emerging narrative
+3. Suggested campaign angle
+4. Market stage
+   (early-stage / growth / saturated)
+
+5. Consumer psychology
+6. Hidden market opportunities
+7. Content opportunities
+8. Competitor positioning insights
+9. Suggested short-form content strategy
+10. Suggested brand positioning strategy
+
+Be highly analytical and business-oriented.
+
+"""
+
+    try:
+
+        response = requests.post(
+
+            "https://openrouter.ai/api/v1/chat/completions",
+
+            headers={
+
+                "Authorization":
+                f"Bearer {OPENROUTER_API_KEY}",
+
+                "Content-Type":
+                "application/json"
+            },
+
+            json={
+
+                "model":
+                "deepseek/deepseek-chat",
+
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+
+                "temperature": 0.7
+            }
+        )
+
+        result = response.json()
+
+        return result[
+            "choices"
+        ][0][
+            "message"
+        ][
+            "content"
+        ]
+
+    except Exception as e:
+
+        print("AI Insights Error:")
+        print(e)
+
+        return (
+            "Unable to generate "
+            "AI insights."
+        )
 
 # ---------------------------------------------------
 # BRAND AUDIT AI ANALYSIS
@@ -72,7 +144,9 @@ def generate_brand_audit_insights(
 
     prompt = f"""
 
-You are an expert brand strategist and market analyst.
+You are an expert brand strategist,
+consumer psychologist,
+and market analyst.
 
 Analyze the following website data.
 
@@ -85,21 +159,27 @@ Identify:
 5. Pricing perception
 6. Market maturity
 7. Brand strengths
-8. Suggested marketing direction
+8. Weaknesses
+9. Emotional branding strategy
+10. Suggested marketing direction
+11. Growth opportunities
+12. Competitive positioning
 
-Website Data:
+# WEBSITE DATA
 
-Title:
+## Title
 {brand_data['title']}
 
-Meta Description:
+## Meta Description
 {brand_data['meta_description']}
 
-Headings:
+## Headings
 {brand_data['headings']}
 
-Paragraphs:
+## Paragraphs
 {brand_data['paragraphs']}
+
+Generate detailed strategic insights.
 
 """
 
@@ -107,7 +187,8 @@ Paragraphs:
 
         response = client.chat.completions.create(
 
-            model="deepseek/deepseek-chat",
+            model=
+            "deepseek/deepseek-chat",
 
             messages=[
                 {
@@ -119,11 +200,16 @@ Paragraphs:
             temperature=0.7
         )
 
-        return response.choices[0].message.content
+        return response.choices[
+            0
+        ].message.content
 
     except Exception as e:
 
         print("Brand Audit AI Error:")
         print(e)
 
-        return "Unable to generate brand audit insights."
+        return (
+            "Unable to generate "
+            "brand audit insights."
+        )

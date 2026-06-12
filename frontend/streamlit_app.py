@@ -7,7 +7,10 @@ import pandas as pd
 # ---------------------------------------------------
 
 st.set_page_config(
-    page_title="Mindshare Intelligence Engine",
+
+    page_title=
+    "Mindshare Intelligence Engine",
+
     layout="wide"
 )
 
@@ -15,10 +18,14 @@ st.set_page_config(
 # SIDEBAR
 # ---------------------------------------------------
 
-st.sidebar.title("Navigation")
+st.sidebar.title(
+    "Navigation"
+)
 
 page = st.sidebar.radio(
+
     "Go To",
+
     [
         "Analyze",
         "Brand Audit",
@@ -32,10 +39,15 @@ page = st.sidebar.radio(
 
 if page == "Analyze":
 
-    st.title("Mindshare Intelligence Engine")
+    st.title(
+        "Mindshare Intelligence Engine"
+    )
 
     st.markdown(
-        "AI-powered audience attention and campaign intelligence system"
+        """
+AI-powered audience attention
+and campaign intelligence system
+"""
     )
 
     # ---------------------------------------------------
@@ -47,7 +59,9 @@ if page == "Analyze":
     )
 
     location = st.selectbox(
+
         "Select Market Location",
+
         [
             "",
             "IN",
@@ -59,7 +73,9 @@ if page == "Analyze":
     )
 
     timeframe = st.selectbox(
+
         "Select Trend Timeline",
+
         [
             "today 3-m",
             "today 12-m",
@@ -88,9 +104,15 @@ if page == "Analyze":
                     "http://127.0.0.1:8000/analyze",
 
                     params={
-                        "keyword": keyword,
-                        "location": location,
-                        "timeframe": timeframe
+
+                        "keyword":
+                        keyword,
+
+                        "location":
+                        location,
+
+                        "timeframe":
+                        timeframe
                     }
                 )
 
@@ -111,22 +133,34 @@ if page == "Analyze":
                 with col1:
 
                     st.metric(
+
                         "Trend Score",
-                        data["scores"]["trend_score"]
+
+                        data["scores"][
+                            "trend_score"
+                        ]
                     )
 
                 with col2:
 
                     st.metric(
+
                         "Saturation Level",
-                        data["scores"]["saturation_level"]
+
+                        data["scores"][
+                            "saturation_level"
+                        ]
                     )
 
                 with col3:
 
                     st.metric(
+
                         "Campaign Opportunity",
-                        data["scores"]["campaign_opportunity"]
+
+                        data["scores"][
+                            "campaign_opportunity"
+                        ]
                     )
 
                 st.divider()
@@ -164,24 +198,116 @@ if page == "Analyze":
                     )
 
                     latest_score = (
-                        trends_df["score"].iloc[-1]
+                        trends_df[
+                            "score"
+                        ].iloc[-1]
                     )
 
                     previous_score = (
-                        trends_df["score"].iloc[-2]
+                        trends_df[
+                            "score"
+                        ].iloc[-2]
                     )
 
                     delta = (
-                        latest_score - previous_score
+                        latest_score -
+                        previous_score
                     )
 
                     st.metric(
+
                         "Trend Momentum",
+
                         latest_score,
+
                         delta
                     )
 
                 st.divider()
+
+                # -----------------------------------------
+                # SEARCH INTELLIGENCE
+                # -----------------------------------------
+
+                st.subheader(
+                    "Search Intelligence"
+                )
+
+                search_results = data[
+                    "search_results"
+                ]
+
+                if not search_results:
+
+                    st.warning(
+                        "No search intelligence found."
+                    )
+
+                else:
+
+                    for result in search_results[:5]:
+
+                        st.markdown(
+                            f"### {result['title']}"
+                        )
+
+                        st.write(
+                            result["snippet"]
+                        )
+
+                        st.write(
+                            result["link"]
+                        )
+
+                        st.divider()
+
+                # -----------------------------------------
+                # MARKET NEWS
+                # -----------------------------------------
+
+                st.subheader(
+                    "Market Intelligence News"
+                )
+
+                market_news = data[
+                    "market_news"
+                ]
+
+                if not market_news:
+
+                    st.warning(
+                        "No market news found."
+                    )
+
+                else:
+
+                    for article in market_news:
+
+                        st.markdown(
+                            f"### {article['title']}"
+                        )
+
+                        st.write(
+                            f"Source: {article['source']}"
+                        )
+
+                        st.write(
+                            article[
+                                "description"
+                            ]
+                        )
+
+                        st.write(
+                            article[
+                                "published_at"
+                            ]
+                        )
+
+                        st.write(
+                            article["url"]
+                        )
+
+                        st.divider()
 
                 # -----------------------------------------
                 # SENTIMENT ANALYSIS
@@ -200,40 +326,65 @@ if page == "Analyze":
                 with col1:
 
                     st.metric(
+
                         "Positive %",
-                        sentiment["positive"]
+
+                        sentiment[
+                            "positive"
+                        ]
                     )
 
                 with col2:
 
                     st.metric(
+
                         "Negative %",
-                        sentiment["negative"]
+
+                        sentiment[
+                            "negative"
+                        ]
                     )
 
                 with col3:
 
                     st.metric(
+
                         "Neutral %",
-                        sentiment["neutral"]
+
+                        sentiment[
+                            "neutral"
+                        ]
                     )
 
                 sentiment_df = pd.DataFrame({
 
                     "Sentiment": [
+
                         "Positive",
+
                         "Negative",
+
                         "Neutral"
                     ],
 
                     "Percentage": [
-                        sentiment["positive"],
-                        sentiment["negative"],
-                        sentiment["neutral"]
+
+                        sentiment[
+                            "positive"
+                        ],
+
+                        sentiment[
+                            "negative"
+                        ],
+
+                        sentiment[
+                            "neutral"
+                        ]
                     ]
                 })
 
                 st.bar_chart(
+
                     sentiment_df.set_index(
                         "Sentiment"
                     )
@@ -298,8 +449,12 @@ if page == "Analyze":
                 with col1:
 
                     st.metric(
+
                         "Primary Age Group",
-                        persona["age_group"]
+
+                        persona[
+                            "age_group"
+                        ]
                     )
 
                     st.write(
@@ -307,7 +462,9 @@ if page == "Analyze":
                     )
 
                     st.write(
-                        persona["lifestyle"]
+                        persona[
+                            "lifestyle"
+                        ]
                     )
 
                     st.write(
@@ -315,7 +472,9 @@ if page == "Analyze":
                     )
 
                     st.write(
-                        persona["interests"]
+                        persona[
+                            "interests"
+                        ]
                     )
 
                     st.write(
@@ -323,7 +482,9 @@ if page == "Analyze":
                     )
 
                     st.write(
-                        persona["buying_behavior"]
+                        persona[
+                            "buying_behavior"
+                        ]
                     )
 
                 with col2:
@@ -333,7 +494,9 @@ if page == "Analyze":
                     )
 
                     st.write(
-                        persona["emotional_triggers"]
+                        persona[
+                            "emotional_triggers"
+                        ]
                     )
 
                     st.write(
@@ -341,7 +504,9 @@ if page == "Analyze":
                     )
 
                     st.write(
-                        persona["platform_preferences"]
+                        persona[
+                            "platform_preferences"
+                        ]
                     )
 
                     st.write(
@@ -349,7 +514,9 @@ if page == "Analyze":
                     )
 
                     st.write(
-                        persona["consumer_motivations"]
+                        persona[
+                            "consumer_motivations"
+                        ]
                     )
 
                     st.write(
@@ -357,7 +524,9 @@ if page == "Analyze":
                     )
 
                     st.write(
-                        persona["pain_points"]
+                        persona[
+                            "pain_points"
+                        ]
                     )
 
                 st.divider()
@@ -367,6 +536,7 @@ if page == "Analyze":
                 )
 
                 st.success(
+
                     persona[
                         "customer_archetype"
                     ]
@@ -379,6 +549,7 @@ if page == "Analyze":
                 )
 
                 st.info(
+
                     persona[
                         "marketing_recommendations"
                     ]
@@ -410,12 +581,15 @@ if page == "Analyze":
 
 elif page == "Brand Audit":
 
-    st.title("AI Brand Audit")
+    st.title(
+        "AI Brand Audit"
+    )
 
     st.markdown(
         """
-Analyze a brand website using AI-powered
-market positioning intelligence.
+Analyze a brand website using
+AI-powered market positioning
+intelligence.
 """
     )
 
@@ -423,7 +597,9 @@ market positioning intelligence.
         "Enter Brand Website URL"
     )
 
-    if st.button("Run Brand Audit"):
+    if st.button(
+        "Run Brand Audit"
+    ):
 
         with st.spinner(
             "Analyzing brand positioning..."
@@ -436,7 +612,8 @@ market positioning intelligence.
                     "http://127.0.0.1:8000/brand-audit",
 
                     params={
-                        "url": website_url
+                        "url":
+                        website_url
                     }
                 )
 
@@ -503,8 +680,12 @@ market positioning intelligence.
                 with col1:
 
                     st.metric(
+
                         "Primary Age Group",
-                        persona["age_group"]
+
+                        persona[
+                            "age_group"
+                        ]
                     )
 
                     st.write(
@@ -512,7 +693,9 @@ market positioning intelligence.
                     )
 
                     st.write(
-                        persona["lifestyle"]
+                        persona[
+                            "lifestyle"
+                        ]
                     )
 
                     st.write(
@@ -520,7 +703,9 @@ market positioning intelligence.
                     )
 
                     st.write(
-                        persona["interests"]
+                        persona[
+                            "interests"
+                        ]
                     )
 
                     st.write(
@@ -528,7 +713,9 @@ market positioning intelligence.
                     )
 
                     st.write(
-                        persona["buying_behavior"]
+                        persona[
+                            "buying_behavior"
+                        ]
                     )
 
                 with col2:
@@ -538,7 +725,9 @@ market positioning intelligence.
                     )
 
                     st.write(
-                        persona["emotional_triggers"]
+                        persona[
+                            "emotional_triggers"
+                        ]
                     )
 
                     st.write(
@@ -546,7 +735,9 @@ market positioning intelligence.
                     )
 
                     st.write(
-                        persona["platform_preferences"]
+                        persona[
+                            "platform_preferences"
+                        ]
                     )
 
                     st.write(
@@ -554,7 +745,9 @@ market positioning intelligence.
                     )
 
                     st.write(
-                        persona["consumer_motivations"]
+                        persona[
+                            "consumer_motivations"
+                        ]
                     )
 
                     st.write(
@@ -562,7 +755,9 @@ market positioning intelligence.
                     )
 
                     st.write(
-                        persona["pain_points"]
+                        persona[
+                            "pain_points"
+                        ]
                     )
 
                 st.divider()
@@ -572,6 +767,7 @@ market positioning intelligence.
                 )
 
                 st.success(
+
                     persona[
                         "customer_archetype"
                     ]
@@ -584,6 +780,7 @@ market positioning intelligence.
                 )
 
                 st.info(
+
                     persona[
                         "marketing_recommendations"
                     ]
@@ -626,11 +823,14 @@ elif page == "History":
     ):
 
         delete_response = requests.delete(
+
             "http://127.0.0.1:8000/delete-history"
         )
 
         st.success(
-            delete_response.json()["message"]
+            delete_response.json()[
+                "message"
+            ]
         )
 
     st.divider()
@@ -649,7 +849,9 @@ elif page == "History":
                 "No saved analyses found."
             )
 
-        for item in reversed(history_data):
+        for item in reversed(
+            history_data
+        ):
 
             st.markdown(
                 f"## {item['keyword']}"
